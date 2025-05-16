@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TFT Lookbook Generator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: #0e0e0e;
+      color: #ffffff;
+    }
+
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      max-width: 1200px;
+      margin: 40px auto;
+      background: #1a1a1a;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      overflow: hidden;
+    }
+
+    .preview-section, .control-section {
+      flex: 1;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .preview-section {
+      background: #141414;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100px;
+      transition: min-height 0.3s ease;
+    }
+
+    .expanded {
+      min-height: 600px;
+    }
+
+    #output-image {
+      max-width: 100%;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+    }
+
+    .btn, input[type="file"] {
+      width: 100%;
+      margin-bottom: 15px;
+      padding: 12px;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+
+    .btn {
+      background: #00bcd4;
+      color: #fff;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .btn:hover {
+      background: #0097a7;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+      font-weight: 600;
+    }
+
+    .social-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    .social-buttons button {
+      flex: 1 1 30%;
+      margin: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: #fff;
+      color: #000;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      padding: 10px;
+    }
+
+    .social-buttons img {
+      width: 20px;
+      height: 20px;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+        margin: 20px;
+      }
+
+      .preview-section, .control-section {
+        min-width: 100%;
+      }
+
+      .social-buttons button {
+        flex: 1 1 80%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="preview-section" id="preview">
+      <p>Upload your photo to preview</p>
+    </div>
+    <div class="control-section">
+      <h2>TFT Season 9 × Mahindra</h2>
+      <input type="file" id="file-input" accept="image/*">
+      <button id="generate-btn" class="btn">Generate Lookbook</button>
+      <button id="download-btn" class="btn" style="display:none;">Download Lookbook</button>
+
+      <div class="social-buttons" style="display:none;" id="social-share">
+        <button onclick="shareOn('https://www.instagram.com')">
+          <img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" alt="Instagram"> Instagram
+        </button>
+        <button onclick="shareOn('https://www.snapchat.com')">
+          <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" alt="Snapchat"> Snapchat
+        </button>
+        <button onclick="shareOn('https://www.whatsapp.com')">
+          <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" alt="WhatsApp"> WhatsApp
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const fileInput = document.getElementById('file-input');
+    const generateBtn = document.getElementById('generate-btn');
+    const preview = document.getElementById('preview');
+    const downloadBtn = document.getElementById('download-btn');
+    const socialShare = document.getElementById('social-share');
+
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    let userImage = null;
+
+    fileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        userImage = new Image();
+        userImage.onload = generateLookbook;
+        userImage.src = event.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    generateBtn.addEventListener('click', generateLookbook);
+
+    function generateLookbook() {
+      if (!userImage) return;
+      preview.classList.add('expanded');
+      while (preview.firstChild) preview.removeChild(preview.firstChild);
+
+      canvas.width = 1080;
+      canvas.height = 1600;
+
+      drawUserImage();
+      applyTemplateOverlay().then(() => {
+        const outputImage = document.createElement('img');
+        outputImage.id = 'output-image';
+        outputImage.src = canvas.toDataURL('image/jpeg', 0.9);
+        preview.appendChild(outputImage);
+        downloadBtn.style.display = 'block';
+        socialShare.style.display = 'flex';
+      });
+    }
+
+    function drawUserImage() {
+      const userAspect = userImage.width / userImage.height;
+      const canvasAspect = canvas.width / canvas.height;
+      let drawWidth, drawHeight, offsetX = 0, offsetY = 0;
+      if (userAspect > canvasAspect) {
+        drawHeight = canvas.height;
+        drawWidth = drawHeight * userAspect;
+        offsetX = (canvas.width - drawWidth) / 2;
+      } else {
+        drawWidth = canvas.width;
+        drawHeight = drawWidth / userAspect;
+        offsetY = (canvas.height - drawHeight) / 2;
+      }
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(userImage, offsetX, offsetY, drawWidth, drawHeight);
+    }
+
+    async function applyTemplateOverlay() {
+      await drawLogo('M_Electric Origin SUVs_PNG_Black BG.png', 80, 30, 200, 200);
+      await drawLogo('mahindra 3xo logo white.png', 800, 30, 200, 200);
+      await drawLogo('Asset 1.png', 140, canvas.height - 550, 800, 160);
+      drawTextOverlay("SEASON 9", canvas.height - 370, "#00bcd4", 30, 'Arial Black');
+      drawTextOverlay("#MYTFTLOOKBOOK", canvas.height - 310, "#ffffff", 40, 'Arial Black');
+      await drawLogo('An Exhibit property-02.png', 400, canvas.height - 240, 280, 30);
+
+      ctx.fillStyle = "rgba(255,255,255,0.5)";
+      ctx.font = "12px Arial";
+      ctx.textAlign = "left";
+      ctx.fillText("Made with TFT Lookbook Generator", 10, canvas.height - 10);
+    }
+
+    function drawTextOverlay(text, y, color, fontSize, fontFamily = 'Arial') {
+      ctx.fillStyle = color;
+      ctx.font = `bold ${fontSize}px ${fontFamily}`;
+      ctx.textAlign = "center";
+      ctx.fillText(text, canvas.width / 2, y);
+    }
+
+    async function drawLogo(src, x, y, width, height) {
+      return new Promise((resolve) => {
+        const logoImg = new Image();
+        logoImg.crossOrigin = "Anonymous";
+        logoImg.onload = () => { ctx.drawImage(logoImg, x, y, width, height); resolve(); };
+        logoImg.src = src;
+      });
+    }
+
+    downloadBtn.addEventListener('click', () => {
+      const link = document.createElement('a');
+      link.download = 'tft-lookbook.jpg';
+      link.href = canvas.toDataURL('image/jpeg', 0.9);
+      link.click();
+    });
+
+    function shareOn(url) {
+      window.open(url, '_blank');
+    }
+  </script>
+</body>
+</html>
