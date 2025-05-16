@@ -129,7 +129,7 @@
       <button id="download-btn" class="btn" style="display:none;">Download Lookbook</button>
 
       <div class="social-buttons" style="display:none;" id="social-share">
-        <button onclick="shareOn('https://www.instagram.com')">
+        <button id="instagram-share">
           <img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" alt="Instagram"> Instagram
         </button>
         <button onclick="shareOn('https://www.snapchat.com')">
@@ -148,10 +148,12 @@
     const preview = document.getElementById('preview');
     const downloadBtn = document.getElementById('download-btn');
     const socialShare = document.getElementById('social-share');
+    const instagramShare = document.getElementById('instagram-share');
 
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     let userImage = null;
+    let generatedImageBlob = null;
 
     fileInput.addEventListener('change', (e) => {
       const file = e.target.files[0];
@@ -177,12 +179,15 @@
 
       drawUserImage();
       applyTemplateOverlay().then(() => {
-        const outputImage = document.createElement('img');
-        outputImage.id = 'output-image';
-        outputImage.src = canvas.toDataURL('image/jpeg', 0.9);
-        preview.appendChild(outputImage);
-        downloadBtn.style.display = 'block';
-        socialShare.style.display = 'flex';
+        canvas.toBlob((blob) => {
+          generatedImageBlob = blob;
+          const outputImage = document.createElement('img');
+          outputImage.id = 'output-image';
+          outputImage.src = URL.createObjectURL(blob);
+          preview.appendChild(outputImage);
+          downloadBtn.style.display = 'block';
+          socialShare.style.display = 'flex';
+        }, 'image/jpeg', 0.9);
       });
     }
 
@@ -239,6 +244,42 @@
       link.href = canvas.toDataURL('image/jpeg', 0.9);
       link.click();
     });
+
+    // Instagram sharing functionality
+    instagramShare.addEventListener('click', shareToInstagramStory);
+
+    function shareToInstagramStory() {
+      if (!generatedImageBlob) {
+        alert("Please generate your lookbook first!");
+        return;
+      }
+
+      // For mobile devices
+      if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+        const fileUrl = URL.createObjectURL(generatedImageBlob);
+        
+        // Instagram story sharing deep link
+        const instagramUrl = `instagram://story-camera`;
+        
+        // First try to open Instagram stories directly
+        window.location.href = instagramUrl;
+        
+        // Set a timeout to check if Instagram was opened
+        setTimeout(() => {
+          // If we're still here, Instagram might not be installed or accessible
+          // Fallback to downloading the image
+          alert("Please save the image and upload it manually to Instagram Stories");
+          const link = document.createElement('a');
+          link.download = 'tft-lookbook.jpg';
+          link.href = fileUrl;
+          link.click();
+        }, 2000);
+      } else {
+        // For desktop - provide instructions
+        alert("To share on Instagram Stories: Download the image and upload it using the Instagram app on your mobile device");
+        downloadBtn.click();
+      }
+    }
 
     function shareOn(url) {
       window.open(url, '_blank');
