@@ -3,141 +3,474 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>TFT Lookbook Frame Overlay</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TFT Lookbook Generator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --primary-color: #00bcd4;
+      --primary-hover: #0097a7;
+      --dark-bg: #0e0e0e;
+      --card-bg: #1a1a1a;
+      --text-color: #ffffff;
+      --text-secondary: #cccccc;
+      --max-width: 600px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
-      background: #0e0e0e;
-      color: #fff;
+      background: var(--dark-bg);
+      color: var(--text-color);
       font-family: 'Poppins', Arial, sans-serif;
+      line-height: 1.6;
       display: flex;
       flex-direction: column;
       align-items: center;
       min-height: 100vh;
-      margin: 0;
-      padding: 40px 10px;
+      padding: 24px 16px;
     }
 
-    .frame-preview {
-      margin-top: 24px;
-      margin-bottom: 16px;
-      background: #1a1a1a;
+    header {
+      width: 100%;
+      max-width: var(--max-width);
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    header h1 {
+      font-size: 28px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    header p {
+      font-size: 16px;
+      color: var(--text-secondary);
+    }
+
+    .upload-container {
+      width: 100%;
+      max-width: var(--max-width);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .upload-area {
+      width: 100%;
+      background: var(--card-bg);
+      border: 2px dashed #444;
       border-radius: 8px;
-      box-shadow: 0 2px 16px rgba(0, 0, 0, 0.4);
-      max-width: 360px;
+      padding: 24px;
+      margin-bottom: 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.3s, background 0.3s;
+      position: relative;
+    }
+
+    .upload-area:hover {
+      border-color: var(--primary-color);
+      background: #222;
+    }
+
+    .upload-area input[type="file"] {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .upload-area p {
+      margin-bottom: 16px;
+    }
+
+    .upload-icon {
+      font-size: 48px;
+      color: var(--primary-color);
+      margin-bottom: 16px;
+    }
+
+    .canvas-container {
+      width: 100%;
+      max-width: min(100%, 360px);
+      margin: 0 auto 24px;
+      display: none;
+      position: relative;
       overflow: hidden;
+      border-radius: 8px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
     }
 
     canvas {
       display: block;
-      max-width: 100%;
+      width: 100%;
       height: auto;
-      border-radius: 8px;
       background: #222;
     }
 
-    .actions {
-      margin-top: 14px;
+    .button-container {
+      display: none;
+      width: 100%;
+      max-width: 360px;
+      margin: 0 auto;
       display: flex;
+      flex-direction: column;
       gap: 12px;
-      flex-wrap: wrap;
-      justify-content: center;
     }
 
-    .btn {
-      background: #00bcd4;
+    .action-button {
+      background: var(--primary-color);
       color: #fff;
+      padding: 14px 28px;
       border: none;
-      border-radius: 5px;
-      padding: 12px 28px;
+      border-radius: 50px;
       font-size: 16px;
-      font-family: inherit;
+      font-weight: 600;
       cursor: pointer;
-      transition: background 0.2s;
-    }
-
-    .btn:active,
-    .btn:hover {
-      background: #0097a7;
-    }
-
-    .social-btn {
-      background: #fff;
-      color: #111;
-      border: none;
-      border-radius: 5px;
-      padding: 10px 18px;
-      font-size: 15px;
-      margin: 0 4px;
+      transition: background 0.3s, transform 0.2s;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0, 188, 212, 0.3);
       display: flex;
       align-items: center;
-      gap: 6px;
+      justify-content: center;
+      gap: 8px;
     }
 
-    input[type="file"] {
-      margin: 0;
-      padding: 8px;
-      border-radius: 5px;
-      background: #222;
+    .action-button:hover {
+      background: var(--primary-hover);
+      transform: translateY(-2px);
+    }
+
+    .action-button:active {
+      transform: translateY(0);
+    }
+
+    #download-button {
+      background: transparent;
+      border: 2px solid var(--primary-color);
+      color: var(--primary-color);
+    }
+
+    #download-button:hover {
+      background: rgba(0, 188, 212, 0.1);
+    }
+
+    .loading-indicator {
+      display: none;
+      margin: 24px auto;
+      border: 4px solid #333;
+      border-top: 4px solid var(--primary-color);
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .product-info {
+      width: 100%;
+      max-width: var(--max-width);
+      background: var(--card-bg);
+      border-radius: 8px;
+      padding: 24px;
+      margin-top: 32px;
+    }
+
+    .product-info h2 {
+      font-size: 24px;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    .product-info p {
+      margin-bottom: 16px;
+      color: var(--text-secondary);
+    }
+
+    .features {
+      margin: 24px 0;
+    }
+
+    .feature {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 16px;
+    }
+
+    .feature i {
+      color: var(--primary-color);
+      margin-right: 12px;
+      font-size: 20px;
+    }
+
+    .feature-content h3 {
+      font-size: 18px;
+      margin-bottom: 4px;
+    }
+
+    .feature-content p {
+      margin-bottom: 0;
+      font-size: 14px;
+    }
+
+    .cta {
+      text-align: center;
+      margin-top: 24px;
+    }
+
+    .cta-button {
+      display: inline-block;
+      background: transparent;
+      color: var(--primary-color);
+      border: 2px solid var(--primary-color);
+      padding: 10px 24px;
+      border-radius: 50px;
+      font-size: 16px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    .cta-button:hover {
+      background: var(--primary-color);
       color: #fff;
+    }
+
+    footer {
+      margin-top: 40px;
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 14px;
+      width: 100%;
+      max-width: var(--max-width);
+    }
+
+    /* Mobile styles */
+    @media (max-width: 480px) {
+      header h1 {
+        font-size: 24px;
+      }
+
+      .upload-area {
+        padding: 16px;
+      }
+
+      .product-info {
+        padding: 20px;
+      }
+
+      .product-info h2 {
+        font-size: 20px;
+      }
+    }
+
+    /* Icon font */
+    .icon {
+      display: inline-block;
+      width: 1em;
+      height: 1em;
+      stroke-width: 0;
+      stroke: currentColor;
+      fill: currentColor;
     }
   </style>
 </head>
 
 <body>
-  <h2>TFT Lookbook Frame Overlay</h2>
-  <input type="file" id="user-image-input" accept="image/*">
-  <div class="frame-preview">
+  <header>
+    <h1>TFT Lookbook Generator</h1>
+    <p>Create your personalized TFT Lookbook with our custom frame overlay</p>
+  </header>
+
+  <div class="upload-container">
+    <div class="upload-area" id="upload-area">
+      <div class="upload-icon">
+        <svg class="icon" viewBox="0 0 24 24">
+          <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"></path>
+        </svg>
+      </div>
+      <p>Tap or drag & drop to upload your image</p>
+      <input type="file" id="file-input" accept="image/*">
+    </div>
+  </div>
+
+  <div class="canvas-container" id="canvas-container">
     <canvas id="lookbook-canvas"></canvas>
   </div>
-  <div class="actions">
-    <button id="download-btn" class="btn" style="display:none;">Download</button>
-    <button id="whatsapp-btn" class="social-btn" style="display:none;"><img
-        src="https://cdn-icons-png.flaticon.com/512/733/733585.png" width="18">WhatsApp</button>
-    <button id="instagram-btn" class="social-btn" style="display:none;"><img
-        src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" width="18">Instagram</button>
-  </div>
-  <script>
-    const frameSrc = './frame.png'; // Place your overlay and rename to frame.png
-    const frameImg = new window.Image();
-    frameImg.src = frameSrc;
-    frameImg.crossOrigin = "anonymous";
 
+  <div class="loading-indicator" id="loading"></div>
+
+  <div class="button-container" id="button-container">
+    <button class="action-button" id="share-button">
+      <svg class="icon" viewBox="0 0 24 24" width="20" height="20">
+        <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"></path>
+      </svg>
+      Share Your Lookbook
+    </button>
+    <button class="action-button" id="download-button">
+      <svg class="icon" viewBox="0 0 24 24" width="20" height="20">
+        <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"></path>
+      </svg>
+      Download Your Lookbook
+    </button>
+  </div>
+
+  <section class="product-info">
+    <h2>What is TFT Lookbook?</h2>
+    <p>TFT Lookbook is a unique platform that combines technology and fashion, allowing users to showcase their personal style through elegantly framed images. Our custom frame overlay adds a premium touch to your photos, perfect for sharing on social media.</p>
+
+    <div class="features">
+      <div class="feature">
+        <i class="icon">
+          <svg viewBox="0 0 24 24">
+            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"></path>
+          </svg>
+        </i>
+        <div class="feature-content">
+          <h3>Premium Styling</h3>
+          <p>Exclusive frame designs that elevate your fashion photography</p>
+        </div>
+      </div>
+      <div class="feature">
+        <i class="icon">
+          <svg viewBox="0 0 24 24">
+            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"></path>
+          </svg>
+        </i>
+        <div class="feature-content">
+          <h3>One-Tap Sharing</h3>
+          <p>Instantly share your creations with friends and followers</p>
+        </div>
+      </div>
+      <div class="feature">
+        <i class="icon">
+          <svg viewBox="0 0 24 24">
+            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"></path>
+          </svg>
+        </i>
+        <div class="feature-content">
+          <h3>Fashion Community</h3>
+          <p>Join a growing community of fashion enthusiasts showcasing their style</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="cta">
+      <a href="https://techfashiontour.com" class="cta-button" target="_blank">Visit TechFashionTour.com</a>
+    </div>
+  </section>
+
+  <footer>
+    <p>&copy; 2025 TFT Lookbook Generator. All rights reserved.</p>
+  </footer>
+
+  <script>
+    // DOM Elements
+    const fileInput = document.getElementById('file-input');
+    const uploadArea = document.getElementById('upload-area');
+    const canvasContainer = document.getElementById('canvas-container');
     const canvas = document.getElementById('lookbook-canvas');
     const ctx = canvas.getContext('2d');
-    const fileInput = document.getElementById('user-image-input');
-    const downloadBtn = document.getElementById('download-btn');
-    const whatsappBtn = document.getElementById('whatsapp-btn');
-    const instagramBtn = document.getElementById('instagram-btn');
+    const shareButton = document.getElementById('share-button');
+    const downloadButton = document.getElementById('download-button');
+    const buttonContainer = document.getElementById('button-container');
+    const loading = document.getElementById('loading');
+
+    // Variables
+    const frameSrc = './frame.png'; // Place your overlay frame here
+    const frameImg = new Image();
+    frameImg.crossOrigin = "anonymous";
+    frameImg.src = frameSrc;
+    
     let userImg = null;
     let frameLoaded = false;
+    let resultBlob = null;
+    let isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
-    frameImg.onload = function () {
-      frameLoaded = true;
-      // Set canvas size to frame's natural size
-      canvas.width = frameImg.naturalWidth;
-      canvas.height = frameImg.naturalHeight;
-      if (userImg) drawLookbook();
-    };
+    // Set up drag and drop for desktop
+    uploadArea.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadArea.style.borderColor = 'var(--primary-color)';
+      uploadArea.style.background = '#222';
+    });
 
-    fileInput.addEventListener('change', function (e) {
+    uploadArea.addEventListener('dragleave', (e) => {
+      e.preventDefault();
+      uploadArea.style.borderColor = '#444';
+      uploadArea.style.background = 'var(--card-bg)';
+    });
+
+    uploadArea.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadArea.style.borderColor = '#444';
+      uploadArea.style.background = 'var(--card-bg)';
+      
+      const file = e.dataTransfer.files[0];
+      if (file && file.type.startsWith('image/')) {
+        processImageFile(file);
+      }
+    });
+
+    // File input change handler
+    fileInput.addEventListener('change', (e) => {
       const file = e.target.files[0];
-      if (!file) return;
+      if (file) {
+        processImageFile(file);
+      }
+    });
+
+    // Process the uploaded image
+    function processImageFile(file) {
+      showLoading(true);
+      
       const reader = new FileReader();
-      reader.onload = function (event) {
-        userImg = new window.Image();
-        userImg.onload = () => { if (frameLoaded) drawLookbook(); };
+      reader.onload = (event) => {
+        userImg = new Image();
+        userImg.onload = () => {
+          if (frameLoaded) {
+            drawLookbook();
+          } else {
+            frameImg.onload = drawLookbook;
+          }
+        };
         userImg.src = event.target.result;
       };
       reader.readAsDataURL(file);
-    });
+    }
 
+    // Frame image onload handler
+    frameImg.onload = function() {
+      frameLoaded = true;
+      canvas.width = frameImg.naturalWidth;
+      canvas.height = frameImg.naturalHeight;
+      
+      if (userImg) drawLookbook();
+    };
+
+    // Draw the lookbook image with frame overlay
     function drawLookbook() {
       // Clear canvas
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       if (!userImg || !frameLoaded) return;
 
-      // --- Crop and scale user image to cover the frame without distortion ---
+      // Calculate crop and scale
       const frameW = canvas.width, frameH = canvas.height;
       const imgW = userImg.width, imgH = userImg.height;
       const frameAspect = frameW / frameH, imgAspect = imgW / imgH;
@@ -153,36 +486,93 @@
         srcY = (imgH - srcH) / 2;
       }
 
+      // Draw user image with proper cropping
       ctx.drawImage(userImg, srcX, srcY, srcW, srcH, 0, 0, frameW, frameH);
-      // --- Overlay the frame at 1:1 (NO stretching) ---
+      
+      // Overlay the frame (non-stretchable)
       ctx.drawImage(frameImg, 0, 0, frameW, frameH);
 
-      downloadBtn.style.display = 'inline-block';
-      whatsappBtn.style.display = 'inline-block';
-      instagramBtn.style.display = 'inline-block';
+      // Convert canvas to blob for sharing
+      canvas.toBlob((blob) => {
+        resultBlob = blob;
+        showLoading(false);
+        showResults();
+      }, 'image/jpeg', 0.95);
     }
 
-    downloadBtn.addEventListener('click', function () {
+    // Show loading indicator
+    function showLoading(show) {
+      loading.style.display = show ? 'block' : 'none';
+      buttonContainer.style.display = 'none';
+    }
+
+    // Show results (canvas and buttons)
+    function showResults() {
+      canvasContainer.style.display = 'block';
+      buttonContainer.style.display = 'flex';
+    }
+
+    // Share button click handler
+    shareButton.addEventListener('click', () => {
+      if (!resultBlob) return;
+      
+      // Create a file from the blob
+      const file = new File([resultBlob], "tft-lookbook.jpg", { type: "image/jpeg" });
+      
+      // Check if Web Share API is supported
+      if (navigator.share) {
+        // Try to share with file if supported
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          navigator.share({
+            files: [file],
+            title: 'TFT Lookbook',
+            text: 'Check out my TFT Lookbook creation!'
+          }).catch(err => {
+            console.error('Error sharing with file:', err);
+            
+            // Try sharing just the text if file sharing fails
+            navigator.share({
+              title: 'TFT Lookbook',
+              text: 'Check out my TFT Lookbook creation!'
+            }).catch(err2 => {
+              console.error('Error sharing without file:', err2);
+              alert('Could not share. Try downloading instead.');
+            });
+          });
+        } else {
+          // Fallback to sharing just text
+          navigator.share({
+            title: 'TFT Lookbook',
+            text: 'Check out my TFT Lookbook creation!'
+          }).catch(err => {
+            console.error('Error sharing:', err);
+            alert('Could not share. Try downloading instead.');
+          });
+        }
+      } else {
+        // Fallback for devices that don't support Web Share API
+        alert('Sharing is not supported on your device. Please download and share manually.');
+      }
+    });
+
+    // Download button click handler
+    downloadButton.addEventListener('click', () => {
+      if (!resultBlob) return;
+      downloadImage();
+    });
+
+    // Download image
+    function downloadImage() {
       const link = document.createElement('a');
       link.download = 'TFT-Lookbook.jpg';
-      link.href = canvas.toDataURL('image/jpeg', 0.95);
+      link.href = URL.createObjectURL(resultBlob);
       link.click();
-    });
-
-    whatsappBtn.addEventListener('click', function () {
-      canvas.toBlob(blob => {
-        const url = URL.createObjectURL(blob);
-        if (/Android|iPhone|iPad/i.test(navigator.userAgent)) {
-          window.open("whatsapp://send?text=Check out my TFT Lookbook!", "_blank");
-        } else {
-          alert("WhatsApp sharing works best on your mobile device.");
-        }
-      }, 'image/jpeg');
-    });
-
-    instagramBtn.addEventListener('click', function () {
-      alert("Instagram sharing: Download and upload manually on Instagram.");
-    });
+      
+      // Clean up
+      setTimeout(() => {
+        URL.revokeObjectURL(link.href);
+      }, 100);
+    }
   </script>
 </body>
 
