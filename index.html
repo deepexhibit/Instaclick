@@ -1,19 +1,88 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>TFT Lookbook Frame Overlay</title>
   <style>
-    body { background: #0e0e0e; color: #fff; font-family: 'Poppins', Arial, sans-serif; display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0; padding: 40px 10px; }
-    .frame-preview { margin-top: 24px; margin-bottom: 16px; background: #1a1a1a; border-radius: 8px; box-shadow: 0 2px 16px rgba(0,0,0,0.4); max-width: 360px; overflow: hidden; }
-    canvas { display: block; max-width: 100%; height: auto; border-radius: 8px; background: #222; }
-    .actions { margin-top: 14px; display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
-    .btn { background: #00bcd4; color: #fff; border: none; border-radius: 5px; padding: 12px 28px; font-size: 16px; font-family: inherit; cursor: pointer; transition: background 0.2s; }
-    .btn:active, .btn:hover { background: #0097a7; }
-    .social-btn { background: #fff; color: #111; border: none; border-radius: 5px; padding: 10px 18px; font-size: 15px; margin: 0 4px; display: flex; align-items: center; gap: 6px; }
-    input[type="file"] { margin: 0; padding: 8px; border-radius: 5px; background: #222; color: #fff; }
+    body {
+      background: #0e0e0e;
+      color: #fff;
+      font-family: 'Poppins', Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 40px 10px;
+    }
+
+    .frame-preview {
+      margin-top: 24px;
+      margin-bottom: 16px;
+      background: #1a1a1a;
+      border-radius: 8px;
+      box-shadow: 0 2px 16px rgba(0, 0, 0, 0.4);
+      max-width: 360px;
+      overflow: hidden;
+    }
+
+    canvas {
+      display: block;
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      background: #222;
+    }
+
+    .actions {
+      margin-top: 14px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .btn {
+      background: #00bcd4;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      padding: 12px 28px;
+      font-size: 16px;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn:active,
+    .btn:hover {
+      background: #0097a7;
+    }
+
+    .social-btn {
+      background: #fff;
+      color: #111;
+      border: none;
+      border-radius: 5px;
+      padding: 10px 18px;
+      font-size: 15px;
+      margin: 0 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    input[type="file"] {
+      margin: 0;
+      padding: 8px;
+      border-radius: 5px;
+      background: #222;
+      color: #fff;
+    }
   </style>
 </head>
+
 <body>
   <h2>TFT Lookbook Frame Overlay</h2>
   <input type="file" id="user-image-input" accept="image/*">
@@ -22,8 +91,10 @@
   </div>
   <div class="actions">
     <button id="download-btn" class="btn" style="display:none;">Download</button>
-    <button id="whatsapp-btn" class="social-btn" style="display:none;"><img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" width="18">WhatsApp</button>
-    <button id="instagram-btn" class="social-btn" style="display:none;"><img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" width="18">Instagram</button>
+    <button id="whatsapp-btn" class="social-btn" style="display:none;"><img
+        src="https://cdn-icons-png.flaticon.com/512/733/733585.png" width="18">WhatsApp</button>
+    <button id="instagram-btn" class="social-btn" style="display:none;"><img
+        src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" width="18">Instagram</button>
   </div>
   <script>
     const frameSrc = './frame.png'; // Place your overlay and rename to frame.png
@@ -40,7 +111,7 @@
     let userImg = null;
     let frameLoaded = false;
 
-    frameImg.onload = function() {
+    frameImg.onload = function () {
       frameLoaded = true;
       // Set canvas size to frame's natural size
       canvas.width = frameImg.naturalWidth;
@@ -48,11 +119,11 @@
       if (userImg) drawLookbook();
     };
 
-    fileInput.addEventListener('change', function(e) {
+    fileInput.addEventListener('change', function (e) {
       const file = e.target.files[0];
       if (!file) return;
       const reader = new FileReader();
-      reader.onload = function(event) {
+      reader.onload = function (event) {
         userImg = new window.Image();
         userImg.onload = () => { if (frameLoaded) drawLookbook(); };
         userImg.src = event.target.result;
@@ -91,14 +162,14 @@
       instagramBtn.style.display = 'inline-block';
     }
 
-    downloadBtn.addEventListener('click', function() {
+    downloadBtn.addEventListener('click', function () {
       const link = document.createElement('a');
       link.download = 'TFT-Lookbook.jpg';
       link.href = canvas.toDataURL('image/jpeg', 0.95);
       link.click();
     });
 
-    whatsappBtn.addEventListener('click', function() {
+    whatsappBtn.addEventListener('click', function () {
       canvas.toBlob(blob => {
         const url = URL.createObjectURL(blob);
         if (/Android|iPhone|iPad/i.test(navigator.userAgent)) {
@@ -109,9 +180,10 @@
       }, 'image/jpeg');
     });
 
-    instagramBtn.addEventListener('click', function() {
+    instagramBtn.addEventListener('click', function () {
       alert("Instagram sharing: Download and upload manually on Instagram.");
     });
   </script>
 </body>
+
 </html>
