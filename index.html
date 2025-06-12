@@ -791,6 +791,19 @@
 
                         cameraControls.style.display = 'flex';
 
+                        // Add this code for smooth scrolling
+                        setTimeout(() => {
+                            const mediaPreview = document.querySelector('.media-preview');
+                            const headerOffset = 100; // Adjust this value as needed
+                            const elementPosition = mediaPreview.getBoundingClientRect().top;
+                            const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+                            window.scrollTo({
+                                top: offsetPosition,
+                                behavior: 'smooth'
+                            });
+                        }, 300); // Small delay to ensure camera preview is rendered
+
                         hideResults();
                         fileUploadSection.style.display = 'none';
 
