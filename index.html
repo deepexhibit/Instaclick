@@ -791,18 +791,20 @@
 
                         cameraControls.style.display = 'flex';
 
-                        // Add this code for smooth scrolling
+                        // Add smooth scroll to camera preview
                         setTimeout(() => {
                             const mediaPreview = document.querySelector('.media-preview');
-                            const headerOffset = 100; // Adjust this value as needed
-                            const elementPosition = mediaPreview.getBoundingClientRect().top;
-                            const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+                            mediaPreview.scrollIntoView({
+                                behavior: 'smooth',
+                                block: 'center'
+                            });
 
-                            window.scrollTo({
-                                top: offsetPosition,
+                            // Additional scroll for mobile devices to ensure controls are visible
+                            window.scrollBy({
+                                top: 100, // Adjust this value as needed
                                 behavior: 'smooth'
                             });
-                        }, 300); // Small delay to ensure camera preview is rendered
+                        }, 300); // Small delay to ensure camera is initialized
 
                         hideResults();
                         fileUploadSection.style.display = 'none';
