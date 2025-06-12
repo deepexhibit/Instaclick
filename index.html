@@ -783,22 +783,23 @@
                         cameraPreview.style.display = 'block';
                         cameraControls.style.display = 'flex';
 
-                        // Remove previous scroll code and add this new mobile-optimized scroll
+                        // New scroll code that ensures scrolling to bottom of preview
                         setTimeout(() => {
                             const mediaPreview = document.querySelector('.media-preview');
-                            const headerHeight = document.querySelector('.kjheader').offsetHeight;
-                            const scrollPosition = mediaPreview.offsetTop - headerHeight;
+                            const previewBottom = mediaPreview.getBoundingClientRect().bottom;
+                            const windowHeight = window.innerHeight;
+                            const scrollAmount = previewBottom - windowHeight + 100; // Extra 100px for padding
 
                             window.scrollTo({
-                                top: scrollPosition,
+                                top: window.pageYOffset + scrollAmount,
                                 behavior: 'smooth'
                             });
 
-                            // For iOS Safari and other mobile browsers
+                            // Fallback for iOS
                             if ('scrollBehavior' in document.documentElement.style === false) {
-                                window.scrollTo(0, scrollPosition);
+                                window.scrollTo(0, window.pageYOffset + scrollAmount);
                             }
-                        }, 800); // Increased delay for mobile devices
+                        }, 1000); // Increased delay for more reliable scrolling
 
                         // Handle mirror effect for front camera
                         if (settings.facingMode === 'user' || currentCamera === 'user') {
