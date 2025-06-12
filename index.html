@@ -19,7 +19,6 @@
             min-height: 100vh;
             overflow-x: hidden;
             line-height: 1.6;
-            scroll-behavior: smooth;
         }
 
         .background-overlay {
@@ -253,100 +252,35 @@
             border: 2px solid #0faaa3;
         }
 
-        /* Enhanced Camera Section */
-        .camera-section {
+        .camera-controls {
             display: none;
-            position: relative;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
             margin: 24px 0;
         }
 
-        .camera-container {
-            position: relative;
-            border-radius: 24px;
-            overflow: hidden;
-            background: #000;
-            border: 2px solid #0faaa3;
-            box-shadow: 0 20px 40px rgba(15, 164, 156, 0.3);
-        }
-
-        .camera-overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
-            padding: 60px 20px 20px;
-            z-index: 10;
-        }
-
-        .camera-top-controls {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            z-index: 15;
-            display: flex;
-            gap: 12px;
-        }
-
-        .camera-control-btn {
-            background: rgba(0, 0, 0, 0.6);
+        .camera-controls button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
             border: 1px solid rgba(255, 255, 255, 0.2);
-            color: #fff;
-            border-radius: 50%;
-            width: 48px;
-            height: 48px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 1.2rem;
-            backdrop-filter: blur(10px);
         }
 
-        .camera-control-btn:hover {
-            background: rgba(0, 0, 0, 0.8);
-            border-color: #0faaa3;
-            transform: scale(1.05);
+        .camera-controls button:hover {
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.15);
         }
 
-        .capture-button {
-            position: absolute;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 15;
+        #capturePhotoBtn {
             background: linear-gradient(135deg, #0faaa3 0%, #0099cc 100%);
-            border: 4px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            width: 80px;
-            height: 80px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 2rem;
-            color: #fff;
-            box-shadow: 0 8px 32px rgba(15, 164, 156, 0.4);
-        }
-
-        .capture-button:hover {
-            transform: translateX(-50%) scale(1.1);
-            box-shadow: 0 12px 40px rgba(15, 164, 156, 0.6);
-            border-color: rgba(255, 255, 255, 0.5);
-        }
-
-        .capture-button:active {
-            transform: translateX(-50%) scale(0.95);
-        }
-
-        .camera-controls {
-            display: none;
-        }
-
-        #cameraPreview.front-camera {
-            transform: scaleX(-1);
+            border-color: #0faaa3;
         }
 
         #loader {
@@ -479,6 +413,11 @@
             background: rgba(0, 212, 255, 0.1);
         }
 
+        /* Add this to your existing CSS */
+        #cameraPreview.front-camera {
+            transform: scaleX(-1);
+        }
+
         #downloadLink:hover {
             background: #0fa49c;
             color: #000;
@@ -521,23 +460,15 @@
                 padding: 24px 16px;
             }
 
-            .camera-top-controls {
-                top: 15px;
-                right: 15px;
+            .camera-controls {
                 gap: 8px;
             }
 
-            .camera-control-btn {
-                width: 44px;
-                height: 44px;
-                font-size: 1.1rem;
-            }
-
-            .capture-button {
-                width: 70px;
-                height: 70px;
-                font-size: 1.8rem;
-                bottom: 20px;
+            .camera-controls button {
+                padding: 10px 16px;
+                font-size: 0.85rem;
+                flex: 1;
+                min-width: 0;
             }
 
             .action-buttons {
@@ -618,32 +549,16 @@
                 <p id="status">Choose an option above to get started</p>
             </div>
 
-            <!-- Enhanced Camera Section -->
-            <div class="camera-section" id="cameraSection">
-                <div class="camera-container">
-                    <video id="cameraPreview" autoplay muted playsinline webkit-playsinline></video>
-                    
-                    <!-- Top Controls -->
-                    <div class="camera-top-controls">
-                        <button class="camera-control-btn" id="switchCameraBtn" title="Switch Camera">🔄</button>
-                        <button class="camera-control-btn" id="closeCameraBtn" title="Close Camera">✕</button>
-                    </div>
-
-                    <!-- Capture Button -->
-                    <button class="capture-button" id="capturePhotoBtn" title="Take Photo">📸</button>
-                </div>
+            <!-- Camera Preview -->
+            <div class="media-preview">
+                <video id="cameraPreview" autoplay muted playsinline webkit-playsinline></video>
             </div>
 
-            <!-- Old Camera Preview (hidden) -->
-            <div class="media-preview" style="display: none;">
-                <video id="oldCameraPreview" autoplay muted playsinline webkit-playsinline></video>
-            </div>
-
-            <!-- Old Camera Controls (hidden) -->
-            <div class="camera-controls" id="cameraControls" style="display: none;">
-                <button id="oldCapturePhotoBtn">📸 Photo</button>
-                <button id="oldSwitchCameraBtn">🔄 Switch</button>
-                <button id="oldCloseCameraBtn">❌ Close</button>
+            <!-- Camera Controls -->
+            <div class="camera-controls" id="cameraControls">
+                <button id="capturePhotoBtn">📸 Photo</button>
+                <button id="switchCameraBtn">🔄 Switch</button>
+                <button id="closeCameraBtn">❌ Close</button>
             </div>
 
             <!-- Loader -->
@@ -683,8 +598,8 @@
         const status = document.getElementById('status');
         const canvas = document.getElementById('imageCanvas');
         const ctx = canvas.getContext('2d');
-        const cameraSection = document.getElementById('cameraSection');
         const cameraPreview = document.getElementById('cameraPreview');
+        const cameraControls = document.getElementById('cameraControls');
         const capturePhotoBtn = document.getElementById('capturePhotoBtn');
         const switchCameraBtn = document.getElementById('switchCameraBtn');
         const closeCameraBtn = document.getElementById('closeCameraBtn');
@@ -706,13 +621,11 @@
         let frameLoaded = false;
         let userImg = null;
 
-        // Smooth scroll to element
-        function scrollToElement(element, offset = 0) {
-            const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
-            const offsetPosition = elementPosition - offset;
-            
+        // Smooth scroll function
+        function smoothScrollToElement(element, offset = 0) {
+            const elementPosition = element.offsetTop - offset;
             window.scrollTo({
-                top: offsetPosition,
+                top: elementPosition,
                 behavior: 'smooth'
             });
         }
@@ -782,8 +695,7 @@
                         console.log('Camera settings:', settings);
 
                         cameraPreview.srcObject = cameraStream;
-                        cameraSection.style.display = 'block';
-                        cameraSection.classList.add('fade-in');
+                        cameraPreview.style.display = 'block';
 
                         // Handle mirror effect for front camera
                         if (settings.facingMode === 'user' || currentCamera === 'user') {
@@ -792,14 +704,16 @@
                             cameraPreview.classList.remove('front-camera');
                         }
 
+                        cameraControls.style.display = 'flex';
+
                         hideResults();
                         fileUploadSection.style.display = 'none';
 
                         status.textContent = `📷 Camera ready! ${settings.width}x${settings.height} @ ${settings.frameRate || 'auto'} FPS`;
 
-                        // Scroll to camera section after a short delay
+                        // Smooth scroll to camera preview after a short delay to ensure elements are rendered
                         setTimeout(() => {
-                            scrollToElement(cameraSection, 20);
+                            smoothScrollToElement(cameraPreview, 100);
                         }, 300);
 
                         // Add load event listener for better performance
@@ -832,8 +746,9 @@
                 });
                 cameraStream = null;
             }
-            cameraSection.style.display = 'none';
+            cameraPreview.style.display = 'none';
             cameraPreview.classList.remove('front-camera');
+            cameraControls.style.display = 'none';
         }
 
         async function switchCamera() {
@@ -871,19 +786,12 @@
             fileUploadSection.style.display = 'block';
             fileUploadSection.classList.add('fade-in');
             status.textContent = 'Select an image file to upload and process.';
-            
-            // Scroll to file upload section
-            setTimeout(() => {
-                scrollToElement(fileUploadSection, 20);
-            }, 100);
         });
         capturePhotoBtn.addEventListener('click', capturePhoto);
         switchCameraBtn.addEventListener('click', switchCamera);
         closeCameraBtn.addEventListener('click', () => {
             stopCamera();
             status.textContent = 'Choose an option above to get started';
-            // Scroll back to top
-            window.scrollTo({ top: 0, behavior: 'smooth' });
         });
 
         // Enhanced share functionality
@@ -928,107 +836,107 @@
                 console.error('Share error:', error);
                 if (error.name === 'AbortError') {
                     showShareStatus('ℹ️ Share cancelled by user', 'info');
-               } else {
-                   showShareStatus('⚠️ Share failed, trying alternative...', 'error');
-                   await handleShareFallback(file, url, title, text);
-               }
-           }
-       }
+                } else {
+                    showShareStatus('⚠️ Share failed, trying alternative...', 'error');
+                    await handleShareFallback(file, url, title, text);
+                }
+            }
+        }
 
-       // Fallback sharing methods
-       async function handleShareFallback(file, url, title, text) {
-           try {
-               if (url && navigator.clipboard) {
-                   await navigator.clipboard.writeText(url);
-                   showShareStatus('📋 Link copied to clipboard! Paste anywhere to share.', 'success');
-                   return;
-               }
+        // Fallback sharing methods
+        async function handleShareFallback(file, url, title, text) {
+            try {
+                if (url && navigator.clipboard) {
+                    await navigator.clipboard.writeText(url);
+                    showShareStatus('📋 Link copied to clipboard! Paste anywhere to share.', 'success');
+                    return;
+                }
 
-               if (url) {
-                   const textArea = document.createElement('textarea');
-                   textArea.value = url;
-                   textArea.style.position = 'fixed';
-                   textArea.style.opacity = '0';
-                   document.body.appendChild(textArea);
-                   textArea.select();
+                if (url) {
+                    const textArea = document.createElement('textarea');
+                    textArea.value = url;
+                    textArea.style.position = 'fixed';
+                    textArea.style.opacity = '0';
+                    document.body.appendChild(textArea);
+                    textArea.select();
 
-                   if (document.execCommand('copy')) {
-                       showShareStatus('📋 Link copied to clipboard! Paste anywhere to share.', 'success');
-                   } else {
-                       showShareStatus('❌ Unable to copy link. Please copy manually from the link above.', 'error');
-                   }
+                    if (document.execCommand('copy')) {
+                        showShareStatus('📋 Link copied to clipboard! Paste anywhere to share.', 'success');
+                    } else {
+                        showShareStatus('❌ Unable to copy link. Please copy manually from the link above.', 'error');
+                    }
 
-                   document.body.removeChild(textArea);
-                   return;
-               }
+                    document.body.removeChild(textArea);
+                    return;
+                }
 
-               if (file) {
-                   showShareStatus('💾 Downloading file for manual sharing...', 'info');
-                   downloadBtn.click();
-               } else {
-                   showShareStatus('❌ Sharing not supported on this device.', 'error');
-               }
+                if (file) {
+                    showShareStatus('💾 Downloading file for manual sharing...', 'info');
+                    downloadBtn.click();
+                } else {
+                    showShareStatus('❌ Sharing not supported on this device.', 'error');
+                }
 
-           } catch (fallbackError) {
-               console.error('Fallback share error:', fallbackError);
-               showShareStatus('❌ All sharing methods failed. Please download and share manually.', 'error');
-           }
-       }
+            } catch (fallbackError) {
+                console.error('Fallback share error:', fallbackError);
+                showShareStatus('❌ All sharing methods failed. Please download and share manually.', 'error');
+            }
+        }
 
-       // Load frame image
-       frameImg.onload = function () {
-           frameLoaded = true;
-           canvas.width = frameImg.naturalWidth;
-           canvas.height = frameImg.naturalHeight;
-       };
+        // Load frame image
+        frameImg.onload = function () {
+            frameLoaded = true;
+            canvas.width = frameImg.naturalWidth;
+            canvas.height = frameImg.naturalHeight;
+        };
 
-       // File input handling
-       input.addEventListener('change', () => {
-           if (input.files.length > 0) {
-               const file = input.files[0];
-               if (file.type.startsWith('image/')) {
-                   status.textContent = '✅ Image ready to upload';
-                   button.disabled = false;
-               } else {
-                   status.textContent = '❌ Please select an image file';
-                   button.disabled = true;
-                   return;
-               }
-           }
-       });
+        // File input handling
+        input.addEventListener('change', () => {
+            if (input.files.length > 0) {
+                const file = input.files[0];
+                if (file.type.startsWith('image/')) {
+                    status.textContent = '✅ Image ready to upload';
+                    button.disabled = false;
+                } else {
+                    status.textContent = '❌ Please select an image file';
+                    button.disabled = true;
+                    return;
+                }
+            }
+        });
 
-       button.addEventListener('click', async () => {
-           const file = input.files[0];
-           if (!file) return;
-           processImageFile(file);
-       });
+        button.addEventListener('click', async () => {
+            const file = input.files[0];
+            if (!file) return;
+            processImageFile(file);
+        });
 
-       // Process image from blob (for camera captures)
-       function processImageFromBlob(blob) {
-           button.disabled = true;
-           status.textContent = 'Processing captured image...';
-           loader.style.display = 'block';
+        // Process image from blob (for camera captures)
+        function processImageFromBlob(blob) {
+            button.disabled = true;
+            status.textContent = 'Processing captured image...';
+            loader.style.display = 'block';
 
-           hideResults();
+            hideResults();
 
-           const img = new Image();
-           img.onload = () => {
-               userImg = img;
-               if (frameLoaded) {
-                   drawLookbook();
-               } else {
-                   frameImg.onload = drawLookbook;
-               }
-               URL.revokeObjectURL(img.src);
-           };
-           img.src = URL.createObjectURL(blob);
-       }
+            const img = new Image();
+            img.onload = () => {
+                userImg = img;
+                if (frameLoaded) {
+                    drawLookbook();
+                } else {
+                    frameImg.onload = drawLookbook;
+                }
+                URL.revokeObjectURL(img.src);
+            };
+            img.src = URL.createObjectURL(blob);
+        }
 
-       // Process image file
-       function processImageFile(file) {
-           button.disabled = true;
-           status.textContent = 'Processing image...';
-           loader.style.display = 'block';
+        // Process image file
+        function processImageFile(file) {
+            button.disabled = true;
+            status.textContent = 'Processing image...';
+            loader.style.display = 'block';
 
            hideResults();
 
@@ -1079,11 +987,6 @@
                status.textContent = '🎉 Image processed successfully!';
                showImageResults();
                button.disabled = false;
-               
-               // Scroll to results
-               setTimeout(() => {
-                   scrollToElement(canvas, 20);
-               }, 300);
            }, 'image/jpeg', 0.95);
        }
 
@@ -1146,9 +1049,6 @@
            fileUploadSection.style.display = 'none';
            resultBlob = null;
            userImg = null;
-           
-           // Scroll back to top
-           window.scrollTo({ top: 0, behavior: 'smooth' });
        });
 
        // Test capabilities on load
@@ -1178,27 +1078,6 @@
        // Cleanup on page unload
        window.addEventListener('beforeunload', () => {
            stopCamera();
-       });
-
-       // Add keyboard support for camera
-       document.addEventListener('keydown', (e) => {
-           if (cameraSection.style.display === 'block') {
-               switch(e.key) {
-                   case ' ':
-                   case 'Enter':
-                       e.preventDefault();
-                       capturePhoto();
-                       break;
-                   case 'Escape':
-                       e.preventDefault();
-                       closeCameraBtn.click();
-                       break;
-                   case 'Tab':
-                       e.preventDefault();
-                       switchCamera();
-                       break;
-               }
-           }
        });
    </script>
 
