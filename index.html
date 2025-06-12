@@ -781,6 +781,24 @@
 
                         cameraPreview.srcObject = cameraStream;
                         cameraPreview.style.display = 'block';
+                        cameraControls.style.display = 'flex';
+
+                        // Remove previous scroll code and add this new mobile-optimized scroll
+                        setTimeout(() => {
+                            const mediaPreview = document.querySelector('.media-preview');
+                            const headerHeight = document.querySelector('.kjheader').offsetHeight;
+                            const scrollPosition = mediaPreview.offsetTop - headerHeight;
+
+                            window.scrollTo({
+                                top: scrollPosition,
+                                behavior: 'smooth'
+                            });
+
+                            // For iOS Safari and other mobile browsers
+                            if ('scrollBehavior' in document.documentElement.style === false) {
+                                window.scrollTo(0, scrollPosition);
+                            }
+                        }, 800); // Increased delay for mobile devices
 
                         // Handle mirror effect for front camera
                         if (settings.facingMode === 'user' || currentCamera === 'user') {
@@ -790,21 +808,6 @@
                         }
 
                         cameraControls.style.display = 'flex';
-
-                        // Add smooth scroll to camera preview
-                        setTimeout(() => {
-                            const mediaPreview = document.querySelector('.media-preview');
-                            mediaPreview.scrollIntoView({
-                                behavior: 'smooth',
-                                block: 'center'
-                            });
-
-                            // Additional scroll for mobile devices to ensure controls are visible
-                            window.scrollBy({
-                                top: 100, // Adjust this value as needed
-                                behavior: 'smooth'
-                            });
-                        }, 300); // Small delay to ensure camera is initialized
 
                         hideResults();
                         fileUploadSection.style.display = 'none';
